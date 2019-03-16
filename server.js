@@ -9,16 +9,15 @@ const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 
 const requester = axios.create({
-    baseUrl: "https://slack.com/api/",
     headers: {
-        "Authorization": "Bearer " + process.env.token
+        "Authorization": "Bearer " + process.env.TOKEN
     }
 });
 
 function react(timestamp, channel, name) {
     console.log("Reacting")
     requester.post(
-        'reactions.add',
+        'https://slack.com/api/reactions.add',
         {
             name: name,
             channel: channel,
@@ -26,7 +25,7 @@ function react(timestamp, channel, name) {
         }
     )
         .then(r => console.log(r.data))
-        .catch(e => console.log(e.message));
+        .catch(e => console.log(e));
 }
 
 function sendImage(ctx, id) {
