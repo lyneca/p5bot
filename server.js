@@ -1,6 +1,7 @@
 const babel = require('@babel/core');
 const axios = require('axios')
 const server = require('server');
+const qs = require('qs')
 
 const FormData = require('form-data')
 
@@ -105,11 +106,11 @@ function auth(ctx) {
     console.log(ctx.query)
     axios.post(
         "https://slack.com/api/oauth.access",
-        {
+        qs.stringify({
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
             code: ctx.query.code
-        },
+        }),
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     ).then(response => console.log(response.data));
     return "Thanks lmao"
