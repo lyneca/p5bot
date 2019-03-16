@@ -1,4 +1,5 @@
 const server = require('server');
+const axios = require('axios')
 
 const { get, post, error } = server.router;
 const { status } = server.reply;
@@ -7,8 +8,23 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 
+function react(timestamp, channel, name) {
+    axios.post(
+        'https://slack.com/api/reactions.add',
+        {
+            token: process.env.TOKEN,
+            name: name,
+            channel: channel,
+            timestamp: timestamp
+        }
+    )
+        .then(r => console.log(r))
+        .catch(e => console.log(e));
+}
+
 function sendImage(ctx, id) {
     console.log("sending " + id)
+    // axios.post();
 }
 
 function getID() {
@@ -25,9 +41,10 @@ function gif(ctx) {
 function render(ctx) {
     console.log(ctx.data)
     if (ctx.data.challenge) return ctx.data.challenge;
-    if (!ctx.data.code) {
+    if (!ctx.data.thread_ts) {
         return "Not yet implemented"
     }
+    react(ctx.data.ts, ctx.data.channel, "thumbsup")
     const id = getID();
     const path = '/tmp/' + id;
 
