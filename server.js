@@ -109,7 +109,8 @@ function auth(ctx) {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
             code: ctx.query.code
-        }
+        },
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     ).then(response => console.log(response.data));
     return "Thanks lmao"
 }
