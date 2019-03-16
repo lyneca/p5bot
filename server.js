@@ -8,15 +8,23 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 
-const requester = axios.create({
+const botRequester = axios.create({
     headers: {
-        "Authorization": "Bearer " + process.env.TOKEN
+        "Authorization": "Bearer " + process.env.BOT_TOKEN
     }
 });
 
+const userRequester = axios.create({
+    headers: {
+        "Authorization": "Bearer " + process.env.USER_TOKEN
+    }
+});
+
+
+
 function react(timestamp, channel, name) {
     console.log("Reacting")
-    requester.post(
+    botRequester.post(
         'https://slack.com/api/reactions.add',
         {
             name: name,
@@ -44,31 +52,63 @@ function gif(ctx) {
     return status(404);
 }
 
-function render(ctx) {
-    console.log(ctx.data)
-    if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
-    if (!ctx.data.hasOwnProperty("event")) return status(400);
-    if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
-    react(ctx.data.event.ts, ctx.data.event.channel, "thumbsup");
-    return status(200);
+function getThreadParent(thread_ts, channel) {
+    return userRequester.get(
+        'https://slack.com/api/channels.history',
+        {
+            params: {
+                channel: channel,
+                latest: thread_ts,
+                count: 1,
+                inclusive: true
+            }
+        }
+    ).then(request => {
+        return request.data.messages[0].files[0].url_private;
+    });
+}
+
+function getFileContents(url) {
+    return userRequester.get(url)
+        .then(response => {
+            return response.data
+        })
+}
+
+function render(code) {
+    console.log(code)
+
     const id = getID();
     const path = '/tmp/' + id;
 
     fs.mkdirSync('/tmp/' + id);
     fs.writeFileSync(
         path + '/script.js',
-        ctx.data.code
+        code
     );
-    exec('./render.sh ' + id)
-        .then(() => sendImage(ctx, id))
-    return "Rendering...";
+    return exec('./render.sh ' + id)
+        .then(() => id)
 }
+
+function processRequest(ctx) {
+    console.log(ctx.data)
+    if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
+    if (!ctx.data.hasOwnProperty("event")) return status(400);
+    if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
+    react(ctx.data.event.ts, ctx.data.event.channel, "thumbsup");
+    getThreadParent(ctx.data.event.thread_ts, ctx.data.event.channel)
+        .then(getFileContents)
+        .then(render)
+        .then(outputFileId => sendImage(ctx, outputFileId))
+    return status(200);
+}
+
 
 // Launch server with options and a couple of routes
 console.log(process.env.PORT || 8080);
 server({ port: process.env.PORT || 8080, security: { csrf: false } }, [
     get('/gif', gif),
-    post('/render', render),
+    post('/render', processRequest),
     error(ctx => {
         console.log("error: " + ctx.error.message);
         console.log(ctx.data);
