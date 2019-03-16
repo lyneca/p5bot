@@ -9,6 +9,7 @@ const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 
 function react(timestamp, channel, name) {
+    console.log("Reacting")
     axios.post(
         'https://slack.com/api/reactions.add',
         {
@@ -40,7 +41,7 @@ function gif(ctx) {
 
 function render(ctx) {
     console.log(ctx.data)
-    if (ctx.data.challenge) return ctx.data.challenge;
+    if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
     if (!ctx.data.thread_ts) {
         return "Not yet implemented"
     }
