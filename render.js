@@ -27,10 +27,10 @@ function pad(s) {
 page.open('/tmp/' + id + '/index.html', function() {
   setTimeout(function() {
     phantom.exit();
-  }, 5000);
+  }, 15000);
 
   setInterval(function() {
     page.render("/tmp/" + id + "/frames/out" + pad(++i) + ".png");
-  }, 0);
+  }, 2);
 });
 
