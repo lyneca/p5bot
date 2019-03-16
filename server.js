@@ -135,7 +135,7 @@ console.log(PORT || 8080);
 server({ port: PORT || 8080, security: { csrf: false } }, [
     get('/gif', gif),
     post('/render', processRequest),
-    post('/auth', auth),
+    get('/auth', auth),
     error(ctx => {
         console.log("error: " + ctx.error.message);
         console.log(ctx.data);
