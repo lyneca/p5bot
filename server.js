@@ -23,6 +23,10 @@ function gif(ctx) {
 }
 
 function render(ctx) {
+    console.log(ctx.data)
+    if (!ctx.data.code) {
+        return "Not yet implemented"
+    }
     const id = getID();
     const path = '/tmp/' + id;
 
@@ -37,6 +41,7 @@ function render(ctx) {
 }
 
 // Launch server with options and a couple of routes
+console.log(process.env.PORT || 8080);
 server({ port: process.env.PORT || 8080, security: { csrf: false } }, [
     get('/gif', gif),
     post('/render', render),
