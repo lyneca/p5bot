@@ -129,6 +129,7 @@ function processRequest(ctx) {
         .then(babel.transformAsync)
         .then(render)
         .then(outputFileId => sendImage(thread_ts, channel, outputFileId))
+        .catch(e => console.log(e))
     return status(200);
 }
 
