@@ -107,10 +107,10 @@ function auth(ctx) {
         {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
-            code: ctx.params.code
+            code: ctx.query.code
         }
     ).then(response => console.log(response.data));
-    return ctx
+    return "Thanks lmao"
 }
 
 function processRequest(ctx) {
