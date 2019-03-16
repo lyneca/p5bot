@@ -11,15 +11,17 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 
+const { CLIENT_ID, CLIENT_SECRET, BOT_TOKEN, USER_TOKEN, PORT } = process.env;
+
 const botRequester = axios.create({
     headers: {
-        "Authorization": "Bearer " + process.env.BOT_TOKEN
+        "Authorization": "Bearer " + BOT_TOKEN
     }
 });
 
 const userRequester = axios.create({
     headers: {
-        "Authorization": "Bearer " + process.env.USER_TOKEN
+        "Authorization": "Bearer " + USER_TOKEN
     }
 });
 
@@ -32,7 +34,7 @@ function react(timestamp, channel, name) {
             timestamp: timestamp
         }
     )
-        .then(r => console.log(r.data))
+        .then()
         .catch(e => console.log(e));
 }
 
@@ -40,7 +42,7 @@ function sendImage(thread_ts, channel, path) {
     const fd = new FormData()
 
     fd.append('channels', channel);
-    fd.append('token', process.env.BOT_TOKEN);
+    fd.append('token', BOT_TOKEN);
     fd.append('thread_ts', thread_ts);
     fd.append('filetype', 'gif');
     fd.append('file', fs.createReadStream(path))
@@ -86,7 +88,7 @@ function getFileContents(url) {
 }
 
 function render(result) {
-    const code = result.code;
+    const { code } = result;
     const id = getID();
     const path = '/tmp/' + id;
 
@@ -97,6 +99,17 @@ function render(result) {
     );
     return exec('./render.sh ' + id)
         .then(() => '/tmp/renders/' + id + '.gif')
+}
+
+function auth(ctx) {
+    axios.post(
+        "https://slack.com/api/oauth.access",
+        {
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+            code: ctx.data.code
+        }
+    ).then(response => console.log(response.data));
 }
 
 function processRequest(ctx) {
@@ -116,10 +129,11 @@ function processRequest(ctx) {
 
 
 // Launch server with options and a couple of routes
-console.log(process.env.PORT || 8080);
-server({ port: process.env.PORT || 8080, security: { csrf: false } }, [
+console.log(PORT || 8080);
+server({ port: PORT || 8080, security: { csrf: false } }, [
     get('/gif', gif),
     post('/render', processRequest),
+    post('/auth', auth),
     error(ctx => {
         console.log("error: " + ctx.error.message);
         console.log(ctx.data);
