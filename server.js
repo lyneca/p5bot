@@ -1,5 +1,7 @@
-const server = require('server');
+const babel = require('@babel/core');
 const axios = require('axios')
+const server = require('server');
+
 const FormData = require('form-data')
 
 const { get, post, error } = server.router;
@@ -83,11 +85,12 @@ function getFileContents(url) {
         })
 }
 
-function render(code) {
+function render(result) {
+    const code = result.code;
     const id = getID();
     const path = '/tmp/' + id;
 
-    fs.mkdirSync('/tmp/' + id);
+    fs.mkdirSync(path);
     fs.writeFileSync(
         path + '/script.js',
         code
@@ -105,6 +108,7 @@ function processRequest(ctx) {
     const channel = ctx.data.event.channel;
     getThreadParent(thread_ts, channel)
         .then(getFileContents)
+        .then(babel.transformAsync)
         .then(render)
         .then(outputFileId => sendImage(thread_ts, channel, outputFileId))
     return status(200);

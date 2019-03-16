@@ -34,3 +34,6 @@ page.open('/tmp/' + id + '/index.html', function() {
   }, 2);
 });
 
+page.onConsoleMessage = function(msg, lineNum, sourceId) {
+  console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+};

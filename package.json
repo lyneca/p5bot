@@ -10,8 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.4",
     "axios": "^0.18.0",
     "form-data": "^2.3.3",
     "server": "^1.0.18"
-  }
+  },
+  "browserslist": "> 0.25%, not dead"
 }

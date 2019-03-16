@@ -14,4 +14,4 @@ convert -loop 0 -delay 2 /tmp/$id/frames/* /tmp/$id/render.gif
 echo "Done."
 mkdir -p /tmp/renders
 cp /tmp/$id/render.gif /tmp/renders/$id.gif
-rm -rf /tmp/$id
+# rm -rf /tmp/$id
