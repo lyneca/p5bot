@@ -43,9 +43,11 @@ function render(ctx) {
     console.log(ctx.data)
     if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
     if (!ctx.data.hasOwnProperty("thread_ts")) {
+        console.log("Not working");
         return "Not yet implemented"
     }
-    react(ctx.data.ts, ctx.data.channel, "thumbsup")
+    console.log("Should get to here");
+    react(ctx.data.ts, ctx.data.channel, "thumbsup");
     const id = getID();
     const path = '/tmp/' + id;
 
