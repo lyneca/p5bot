@@ -65,6 +65,7 @@ server({ port: process.env.PORT || 8080, security: { csrf: false } }, [
     get('/gif', gif),
     post('/render', render),
     error(ctx => {
+        console.log("error: " + ctx.error.message);
         console.log(ctx.data);
         return status(500).send(ctx.error.message);
     })
