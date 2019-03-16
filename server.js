@@ -110,6 +110,7 @@ function auth(ctx) {
             code: ctx.params.code
         }
     ).then(response => console.log(response.data));
+    return "Thanks lmao"
 }
 
 function processRequest(ctx) {
@@ -117,8 +118,9 @@ function processRequest(ctx) {
     if (!ctx.data.hasOwnProperty("event")) return status(400);
     if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
     react(ctx.data.event.ts, ctx.data.event.channel, "thumbsup");
-    const thread_ts = ctx.data.event.thread_ts;
-    const channel = ctx.data.event.channel;
+
+    const { thread_ts, channel } = ctx.data.event;
+
     getThreadParent(thread_ts, channel)
         .then(getFileContents)
         .then(babel.transformAsync)
