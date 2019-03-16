@@ -24,6 +24,7 @@ function gif(ctx) {
 
 function render(ctx) {
     console.log(ctx.data)
+    if (ctx.data.challenge) return ctx.data.challenge;
     if (!ctx.data.code) {
         return "Not yet implemented"
     }
