@@ -1,5 +1,6 @@
 const server = require('server');
 const axios = require('axios')
+const FormData = require('form-data')
 
 const { get, post, error } = server.router;
 const { status } = server.reply;
@@ -21,7 +22,6 @@ const userRequester = axios.create({
 });
 
 function react(timestamp, channel, name) {
-    console.log("Reacting")
     botRequester.post(
         'https://slack.com/api/reactions.add',
         {
@@ -35,17 +35,18 @@ function react(timestamp, channel, name) {
 }
 
 function sendImage(thread_ts, channel, path) {
-    console.log("sending " + path)
-    botRequester.post(
+    const fd = new FormData()
+
+    fd.append('channels', channel);
+    fd.append('token', process.env.BOT_TOKEN);
+    fd.append('thread_ts', thread_ts);
+    fd.append('filetype', 'gif');
+    fd.append('file', fs.createReadStream(path))
+
+    return botRequester.post(
         "https://slack.com/api/files.upload",
-        {
-            channels: [channel],
-            content: fs.createReadStream(path),
-            thread_ts: thread_ts,
-            filetype: 'gif'
-        }
-    )
-        .then(response => console.log(response.data));
+        fd, { headers: fd.getHeaders() }
+    );
 }
 
 function getID() {
@@ -83,8 +84,6 @@ function getFileContents(url) {
 }
 
 function render(code) {
-    console.log(code)
-
     const id = getID();
     const path = '/tmp/' + id;
 
@@ -98,7 +97,6 @@ function render(code) {
 }
 
 function processRequest(ctx) {
-    console.log(ctx.data)
     if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
     if (!ctx.data.hasOwnProperty("event")) return status(400);
     if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
