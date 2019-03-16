@@ -102,7 +102,6 @@ function render(result) {
 }
 
 function auth(ctx) {
-    console.log(ctx.params);
     axios.post(
         "https://slack.com/api/oauth.access",
         {
@@ -111,7 +110,7 @@ function auth(ctx) {
             code: ctx.params.code
         }
     ).then(response => console.log(response.data));
-    return "Thanks lmao"
+    return ctx
 }
 
 function processRequest(ctx) {
