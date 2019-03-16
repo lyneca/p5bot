@@ -42,7 +42,7 @@ function gif(ctx) {
 function render(ctx) {
     console.log(ctx.data)
     if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
-    if (!ctx.data.thread_ts) {
+    if (!ctx.data.hasOwnProperty("thread_ts")) {
         return "Not yet implemented"
     }
     react(ctx.data.ts, ctx.data.channel, "thumbsup")
