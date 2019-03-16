@@ -42,12 +42,10 @@ function gif(ctx) {
 function render(ctx) {
     console.log(ctx.data)
     if (ctx.data.hasOwnProperty("challenge")) return ctx.data.challenge;
-    if (!ctx.data.hasOwnProperty("thread_ts")) {
-        console.log("Not working");
-        return "Not yet implemented"
-    }
-    console.log("Should get to here");
-    react(ctx.data.ts, ctx.data.channel, "thumbsup");
+    if (!ctx.data.hasOwnProperty("event")) return status(400);
+    if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
+    react(ctx.data.event.ts, ctx.data.event.channel, "thumbsup");
+    return status(200);
     const id = getID();
     const path = '/tmp/' + id;
 
