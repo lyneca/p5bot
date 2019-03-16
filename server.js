@@ -20,8 +20,6 @@ const userRequester = axios.create({
     }
 });
 
-
-
 function react(timestamp, channel, name) {
     console.log("Reacting")
     botRequester.post(
@@ -36,9 +34,18 @@ function react(timestamp, channel, name) {
         .catch(e => console.log(e));
 }
 
-function sendImage(ctx, id) {
-    console.log("sending " + id)
-    // axios.post();
+function sendImage(thread_ts, channel, path) {
+    console.log("sending " + path)
+    botRequester.post(
+        "https://slack.com/api/files.upload",
+        {
+            channels: [channel],
+            content: fs.createReadStream(path),
+            thread_ts: thread_ts,
+            filetype: 'gif'
+        }
+    )
+        .then(response => console.log(response.data));
 }
 
 function getID() {
@@ -87,7 +94,7 @@ function render(code) {
         code
     );
     return exec('./render.sh ' + id)
-        .then(() => id)
+        .then(() => '/tmp/renders/' + id + '.gif')
 }
 
 function processRequest(ctx) {
@@ -96,10 +103,12 @@ function processRequest(ctx) {
     if (!ctx.data.hasOwnProperty("event")) return status(400);
     if (!ctx.data.event.hasOwnProperty("thread_ts")) return status(400);
     react(ctx.data.event.ts, ctx.data.event.channel, "thumbsup");
-    getThreadParent(ctx.data.event.thread_ts, ctx.data.event.channel)
+    const thread_ts = ctx.data.event.thread_ts;
+    const channel = ctx.data.event.channel;
+    getThreadParent(thread_ts, channel)
         .then(getFileContents)
         .then(render)
-        .then(outputFileId => sendImage(ctx, outputFileId))
+        .then(outputFileId => sendImage(thread_ts, channel, outputFileId))
     return status(200);
 }
 
