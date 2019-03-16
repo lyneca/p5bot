@@ -107,7 +107,7 @@ function auth(ctx) {
         {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
-            code: ctx.data.code
+            code: ctx.params.code
         }
     ).then(response => console.log(response.data));
 }
