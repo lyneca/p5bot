@@ -19,7 +19,7 @@ function react(timestamp, channel, name) {
             timestamp: timestamp
         }
     )
-        .then(r => console.log(r))
+        .then(r => console.log(r.data))
         .catch(e => console.log(e));
 }
 
