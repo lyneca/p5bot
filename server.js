@@ -77,7 +77,6 @@ function getThreadParent(thread_ts, channel) {
             }
         }
     ).then(request => {
-        console.log(request.data)
         return request.data.messages[0].files[0].url_private;
     });
 }
