@@ -27,7 +27,7 @@ function pad(s) {
 page.open('/tmp/' + id + '/index.html', function() {
   setTimeout(function() {
     phantom.exit();
-  }, 15000);
+  }, 30000);
 
   setInterval(function() {
     page.render("/tmp/" + id + "/frames/out" + pad(++i) + ".png");
