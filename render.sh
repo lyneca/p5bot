@@ -9,7 +9,7 @@ echo "Rendering with PhantomJS..."
 bin/phantomjs render.js $id
 
 echo "Stitching frames to gif..."
-convert -loop 0 -delay 2 /tmp/$id/frames/* /tmp/$id/render.gif
+convert -loop 0 -delay 4 /tmp/$id/frames/* /tmp/$id/render.gif
 
 echo "Done."
 mkdir -p /tmp/renders
